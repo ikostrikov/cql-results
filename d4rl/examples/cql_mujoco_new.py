@@ -104,7 +104,7 @@ def experiment(variant):
     algorithm.train()
 
 def enable_gpus(gpu_str):
-    if (gpu_str is not ""):
+    if (gpu_str != ""):
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_str
     return
 
@@ -120,9 +120,9 @@ if __name__ == "__main__":
         env_name='Hopper-v2',
         sparse_reward=False,
         algorithm_kwargs=dict(
-            num_epochs=3000,
-            num_eval_steps_per_epoch=1000,
-            num_trains_per_train_loop=1000,  
+            num_epochs=100,
+            num_eval_steps_per_epoch=10000,
+            num_trains_per_train_loop=10000,  
             num_expl_steps_per_train_loop=1000,
             min_num_steps_before_training=1000,
             max_path_length=1000,
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default='hopper-medium-v0')
-    parser.add_argument("--gpu", default='0', type=str)
+    parser.add_argument("--gpu", default='', type=str)
     parser.add_argument("--max_q_backup", type=str, default="False")          # if we want to try max_{a'} backups, set this to true
     parser.add_argument("--deterministic_backup", type=str, default="True")   # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
     parser.add_argument("--policy_eval_start", default=40000, type=int)       # Defaulted to 20000 (40000 or 10000 work similarly)
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     variant['env_name'] = args.env
     variant['seed'] = args.seed
 
-    rnd = np.random.randint(0, 1000000)
-    setup_logger(os.path.join('CQL_offline_mujoco_runs', str(rnd)), variant=variant, base_log_dir='/nfs/kun1/users/aviralkumar/random_expert_CQL_runs')
+    # rnd = np.random.randint(0, 1000000)
+    setup_logger(os.path.join(args.env, str(args.seed)), variant=variant, base_log_dir='/tmp/CQL_runs')
     ptu.set_gpu_mode(True)
     experiment(variant)
